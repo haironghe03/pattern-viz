@@ -77,7 +77,9 @@ def render_html(rows: list[dict]) -> str:
     h1 { font-size: 20px; margin: 0 0 12px; }
     .meta { color: #666; font-size: 12px; margin-bottom: 16px; }
     table { border-collapse: collapse; width: 100%; table-layout: fixed; }
-    thead th { position: sticky; top: 0; background: #fafafa; z-index: 1; }
+    thead th { position: sticky; background: #fafafa; z-index: 1; }
+    thead tr:first-child th { top: 0; z-index: 3; }
+    thead tr:nth-child(2) th { top: var(--thead-row1-height, 36px); z-index: 2; }
     th, td { border: 1px solid #e5e5e5; vertical-align: top; padding: 6px; }
     td:first-child, th:first-child { width: 220px; }
     img.thumb { max-width: 100%; height: auto; display: block; }
@@ -92,6 +94,21 @@ def render_html(rows: list[dict]) -> str:
   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
   <title>Pattern Viz Grid (ResNet50)</title>
   <style>{css}</style>
+  <script>
+    // Make both header rows sticky (row 2 sits beneath row 1).
+    (function() {{
+      function updateStickyHeaderOffsets() {{
+        const thead = document.querySelector('table thead');
+        if (!thead) return;
+        const firstRow = thead.querySelector('tr:first-child');
+        if (!firstRow) return;
+        const h = firstRow.getBoundingClientRect().height;
+        document.documentElement.style.setProperty('--thead-row1-height', `${{h}}px`);
+      }}
+      window.addEventListener('load', updateStickyHeaderOffsets, {{ once: true }});
+      window.addEventListener('resize', updateStickyHeaderOffsets);
+    }})();
+  </script>
 </head>
 <body>
   <h1>Pattern Viz Grid (ResNet50)</h1>
